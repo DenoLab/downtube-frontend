@@ -16,7 +16,7 @@ function App() {
     setFileUrl('');
 
     try {
-      const response = await fetch('https://downtube-backend-1.onrender.com/download', {
+      const response = await fetch('https://downtube-backend-2.onrender.com//download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
