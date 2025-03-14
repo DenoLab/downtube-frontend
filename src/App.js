@@ -1,58 +1,47 @@
-import { useState } from 'react';
-import './App.css';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
-  const [url, setUrl] = useState('');
-  const [status, setStatus] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [downloadLink, setDownloadLink] = useState('');
+  const [fileName, setFileName] = useState('');
 
+  // 📌 Gửi yêu cầu tải video
   const handleDownload = async () => {
-    if (!url) {
-      setStatus('Vui lòng nhập URL!');
+    if (!videoUrl.trim()) {
+      alert("Vui lòng nhập URL YouTube!");
       return;
     }
 
-    setStatus('Đang tải video...');
-    setFileUrl('');
-    //hello
     try {
-      const response = await fetch('https://downtube-backend.onrender.com/download', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      });
+      const response = await axios.post('http://localhost:4000/download', { url: videoUrl });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        setStatus(result.message);
-        setFileUrl(result.fileUrl);
-      } else {
-        setStatus(`Lỗi: ${result.error}`);
-      }
+      // ✅ Nhận link và tên file từ backend
+      setDownloadLink(response.data.downloadLink);
+      setFileName(response.data.fileName);
     } catch (error) {
-      setStatus('Không thể kết nối đến server!');
+      console.error("Lỗi tải video:", error);
+      alert("Tải video thất bại!");
     }
   };
 
   return (
-    <div className="App">
-      <h1>YouTube Video Downloader 🎥</h1>
+    <div style={{ textAlign: 'center', padding: '50px' }}>
+      <h1>YouTube Video Downloader</h1>
       <input
         type="text"
-        placeholder="Nhập URL YouTube..."
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
+        placeholder="Nhập URL video..."
+        value={videoUrl}
+        onChange={(e) => setVideoUrl(e.target.value)}
+        style={{ width: '300px', padding: '10px', marginRight: '10px' }}
       />
-      <button onClick={handleDownload}>Tải Video</button>
-      <p>{status}</p>
+      <button onClick={handleDownload} style={{ padding: '10px' }}>Tải Video</button>
 
-      {fileUrl && (
-        <div>
-          <h3>Video đã tải:</h3>
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-            👉 Nhấn vào đây để tải xuống
-          </a>
+      {downloadLink && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Video đã sẵn sàng tải:</h3>
+          <p>📂 Tên file: <strong>{fileName}</strong></p>
+          <a href={downloadLink} download={fileName}>📥 Nhấn để tải video</a>
         </div>
       )}
     </div>
