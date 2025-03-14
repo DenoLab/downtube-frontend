@@ -14,7 +14,7 @@ function App() {
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/download', { url: videoUrl });
+      const response = await axios.post('https://downtube-backend-1.onrender.com/download', { url: videoUrl });
 
       // ✅ Nhận link và tên file từ backend
       setDownloadLink(response.data.downloadLink);
